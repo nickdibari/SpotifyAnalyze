@@ -1,1 +1,2 @@
 Flask==1.1.2
+spotify-client==1.6.0
