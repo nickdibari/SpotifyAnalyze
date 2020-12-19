@@ -1,21 +1,20 @@
 from flask import Flask, redirect, render_template, request, session, url_for
 from spotify_client import SpotifyClient
-import requests
 
-from config import SECRET_KEY, SPOTIFY_CLIENT_ID, SPOTIFY_SECRET_KEY, SPOTIFY_SCOPES, SPOTIFY_REDIRECT_URI
+import config
 
 app = Flask(__name__)
 
-app.secret_key = SECRET_KEY
+app.secret_key = config.SECRET_KEY
 
 
 @app.route('/')
 def homepage():
-    client = SpotifyClient(client_id=SPOTIFY_CLIENT_ID, secret_key=SPOTIFY_SECRET_KEY)
+    client = SpotifyClient(client_id=config.SPOTIFY_CLIENT_ID, secret_key=config.SPOTIFY_SECRET_KEY)
     spotify_oauth_link = client.build_spotify_oauth_confirm_link(
         'test-state',
-        SPOTIFY_SCOPES,
-        SPOTIFY_REDIRECT_URI
+        config.SPOTIFY_SCOPES,
+        config.SPOTIFY_REDIRECT_URI
     )
 
     return render_template('homepage.html', spotify_oauth_link=spotify_oauth_link)
@@ -23,10 +22,10 @@ def homepage():
 
 @app.route('/spotify_auth')
 def spotify_auth():
-    client = SpotifyClient(client_id=SPOTIFY_CLIENT_ID, secret_key=SPOTIFY_SECRET_KEY)
+    client = SpotifyClient(client_id=config.SPOTIFY_CLIENT_ID, secret_key=config.SPOTIFY_SECRET_KEY)
     code = request.args.get('code')
 
-    access_token = client.get_access_and_refresh_tokens(code, SPOTIFY_REDIRECT_URI)['access_token']
+    access_token = client.get_access_and_refresh_tokens(code, config.SPOTIFY_REDIRECT_URI)['access_token']
     session['access_token'] = access_token
 
     return redirect(url_for('spotify_attributes'))
@@ -34,17 +33,18 @@ def spotify_auth():
 
 @app.route('/spotify_attributes')
 def spotify_attributes():
-    client = SpotifyClient(client_id=SPOTIFY_CLIENT_ID, secret_key=SPOTIFY_SECRET_KEY)
+    client = SpotifyClient(client_id=config.SPOTIFY_CLIENT_ID, secret_key=config.SPOTIFY_SECRET_KEY)
     access_token = session['access_token']
 
     headers = {'Authorization': f'Bearer {access_token}'}
     params = {'limit': 30}
 
-    recently_listened_tracks = requests.get(
+    recently_listened_tracks = client._make_spotify_request(
+        'GET',
         'https://api.spotify.com/v1/me/player/recently-played',
         headers=headers,
         params=params
-    ).json()
+    )
 
     recently_listened_tracks_codes = [{'code': track['track']['uri']} for track in recently_listened_tracks['items']]
     recently_listened_track_attributes = client.get_audio_features_for_tracks(recently_listened_tracks_codes)
@@ -122,4 +122,4 @@ def spotify_attributes():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=config.DEBUG)
