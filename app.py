@@ -49,19 +49,73 @@ def spotify_attributes():
     recently_listened_tracks_codes = [{'code': track['track']['uri']} for track in recently_listened_tracks['items']]
     recently_listened_track_attributes = client.get_audio_features_for_tracks(recently_listened_tracks_codes)
 
+    tracks = [client.get_code_from_spotify_uri(track['code']) for track in recently_listened_tracks_codes]
+    seed_tracks = ','.join(tracks[:5])
+
     total_valence = sum([track['valence'] for track in recently_listened_track_attributes])
-    average_valence = round((total_valence / len(recently_listened_track_attributes) * 100), 2)
+    average_valence = round((total_valence / len(recently_listened_track_attributes)), 2)
+    average_valence_display = int(average_valence * 100)
+
+    tracks_for_valence = client._make_spotify_request(
+        'GET',
+        'https://api.spotify.com/v1/recommendations',
+        params={
+            'max_valence': average_valence + .05,
+            'min_valence': average_valence - .05,
+            'seed_tracks': seed_tracks,
+            'limit': 5
+        }
+    )
+
+    track_codes_for_valence = [
+        client.get_code_from_spotify_uri(track['uri']) for track in tracks_for_valence['tracks']
+    ]
 
     total_energy = sum([track['energy'] for track in recently_listened_track_attributes])
-    average_energy = round((total_energy / len(recently_listened_track_attributes) * 100), 2)
+    average_energy = round((total_energy / len(recently_listened_track_attributes)), 2)
+    average_energy_display = int(average_energy * 100)
+
+    tracks_for_energy = client._make_spotify_request(
+        'GET',
+        'https://api.spotify.com/v1/recommendations',
+        params={
+            'max_energy': average_energy + .05,
+            'min_energy': average_energy - .05,
+            'seed_tracks': seed_tracks,
+            'limit': 5
+        }
+    )
+
+    track_codes_for_energy = [
+        client.get_code_from_spotify_uri(track['uri']) for track in tracks_for_energy['tracks']
+    ]
 
     total_danceability = sum([track['danceability'] for track in recently_listened_track_attributes])
-    average_danceability = round((total_danceability / len(recently_listened_track_attributes) * 100), 2)
+    average_danceability = round((total_danceability / len(recently_listened_track_attributes)), 2)
+    average_danceability_display = int(average_danceability * 100)
+
+    tracks_for_danceability = client._make_spotify_request(
+        'GET',
+        'https://api.spotify.com/v1/recommendations',
+        params={
+            'max_danceability': average_danceability + .05,
+            'min_danceability': average_danceability - .05,
+            'seed_tracks': seed_tracks,
+            'limit': 5
+        }
+    )
+
+    track_codes_for_danceability = [
+        client.get_code_from_spotify_uri(track['uri']) for track in tracks_for_danceability['tracks']
+    ]
 
     context = {
-        'average_valence': average_valence,
-        'average_energy': average_energy,
-        'average_danceability': average_danceability
+        'average_valence': average_valence_display,
+        'average_energy': average_energy_display,
+        'average_danceability': average_danceability_display,
+        'track_codes_for_valence': track_codes_for_valence,
+        'track_codes_for_energy': track_codes_for_energy,
+        'track_codes_for_danceability': track_codes_for_danceability,
     }
 
     return render_template('attributes.html', **context)
