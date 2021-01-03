@@ -1,6 +1,7 @@
 <html lang="en">
 <head>
     <title>Spotify Analyze</title>
+    <script src="{{ url_for('static', filename='js/generate_recommendations.js')}}" defer></script>
 </head>
 
 <body>
@@ -12,65 +13,10 @@
 
     <h2>Tracks For Valence</h2>
     <div id="valence-playlist"></div>
-    <script type="text/javascript" defer>
-        let options = {
-            method: 'GET',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        };
-
-        let resp = fetch(window.location.origin + '/recommend?target=valence', options).then(response => {
-            return response.json();
-        }).then(json => {
-           let valencePlaylist = document.getElementById('valence-playlist');
-
-           for (const code of json.codes) {
-               let playButton = document.createElement('iframe');
-                playButton.setAttribute('allow', 'encrypted-media https://open.spotify.com;');
-                playButton.src = 'https://open.spotify.com/embed/track/' + code;
-
-               valencePlaylist.appendChild(playButton);
-           }
-        });
-    </script>
-
     <h2>Tracks For Energy</h2>
     <div id="energy-playlist"></div>
-    <script type="text/javascript" defer>
-        resp = fetch(window.location.origin + '/recommend?target=energy', options).then(response => {
-            return response.json();
-        }).then(json => {
-           let energyPlaylist = document.getElementById('energy-playlist');
-
-           for (const code of json.codes) {
-               let playButton = document.createElement('iframe');
-                playButton.setAttribute('allow', 'encrypted-media https://open.spotify.com;');
-                playButton.src = 'https://open.spotify.com/embed/track/' + code;
-
-               energyPlaylist.appendChild(playButton);
-           }
-        });
-    </script>
-
     <h2>Tracks For Danceability</h2>
     <div id="danceability-playlist"></div>
-    <script type="text/javascript" defer>
-        resp = fetch(window.location.origin + '/recommend?target=danceability', options).then(response => {
-            return response.json();
-        }).then(json => {
-           let danceabilityPlaylist = document.getElementById('danceability-playlist');
-
-           for (const code of json.codes) {
-               let playButton = document.createElement('iframe');
-                playButton.setAttribute('allow', 'encrypted-media https://open.spotify.com;');
-                playButton.src = 'https://open.spotify.com/embed/track/' + code;
-
-               danceabilityPlaylist.appendChild(playButton);
-           }
-        });
-    </script>
 </div>
 </body>
 </html>
