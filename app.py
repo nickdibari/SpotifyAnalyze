@@ -36,21 +36,16 @@ def spotify_attributes():
     client = SpotifyClient(client_id=config.SPOTIFY_CLIENT_ID, secret_key=config.SPOTIFY_SECRET_KEY)
     access_token = session['access_token']
 
-    headers = {'Authorization': f'Bearer {access_token}'}
-    params = {'limit': 30}
-
-    recently_listened_tracks = client._make_spotify_request(
-        'GET',
-        'https://api.spotify.com/v1/me/player/recently-played',
-        headers=headers,
-        params=params
+    recently_listened_tracks = client.get_recently_played_tracks_for_user(
+        access_token,
+        limit=config.SPOTIFY_RECENTLY_LISTENED_TRACKS_LIMIT
     )
 
     recently_listened_tracks_codes = [{'code': track['track']['uri']} for track in recently_listened_tracks['items']]
     recently_listened_track_attributes = client.get_audio_features_for_tracks(recently_listened_tracks_codes)
 
     tracks = [client.get_code_from_spotify_uri(track['code']) for track in recently_listened_tracks_codes]
-    seed_tracks = ','.join(tracks[:5])
+    seed_tracks = ','.join(tracks[:config.SPOTIFY_SEED_TRACK_LIMIT])
     session['seed_tracks'] = seed_tracks
 
     total_valence = sum([track['valence'] for track in recently_listened_track_attributes])
@@ -93,7 +88,7 @@ def recommend():
             f'max_{target}': average_value + .05,
             f'min_{target}': average_value - .05,
             'seed_tracks': seed_tracks,
-            'limit': 5
+            'limit': config.SPOTIFY_SEED_TRACK_LIMIT
         }
     )
 
