@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, request, session, url_for
+from flask import Flask, redirect, render_template, request, session, url_for, abort
 from spotify_client import SpotifyClient
 
 import config
@@ -33,8 +33,12 @@ def spotify_auth():
 
 @app.route('/spotify_attributes')
 def spotify_attributes():
+    access_token = session.get('access_token')
+
+    if not access_token:
+        return redirect(url_for('homepage'))
+
     client = SpotifyClient(client_id=config.SPOTIFY_CLIENT_ID, secret_key=config.SPOTIFY_SECRET_KEY)
-    access_token = session['access_token']
 
     recently_listened_tracks = client.get_recently_played_tracks_for_user(
         access_token,
