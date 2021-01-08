@@ -1,6 +1,52 @@
 'use strict';
 
 (function IIFE() {
+    function makeLikeRequest() {
+        let options = {
+            method: 'POST',
+            credentials: 'include',
+            headers: {'Content-Type': 'application/json'}
+        };
+
+        let songId = this.dataset.songId;
+
+        fetch(window.location.origin + '/like_song?song_id=' + songId, options).then(response => {
+            return response.json();
+        }).then(json => {
+            let likeButton = document.getElementById('like-button-' + songId);
+            likeButton.disabled = true;
+        })
+    }
+
+    function createLikeButton(songId) {
+        let button = document.createElement('button');
+        button.id = 'like-button-' + songId;
+        button.appendChild(document.createTextNode('Like'));
+        button.dataset.songId = songId;
+        button.addEventListener('click', makeLikeRequest);
+
+        return button
+    }
+
+    function createRecommendationPlaylist(data, target) {
+        let playlistId = target + '-playlist';
+        let playlist = document.getElementById(playlistId);
+
+        for (const code of data.codes) {
+            let songContainer = document.createElement('div');
+
+            let playButton = document.createElement('iframe');
+            playButton.setAttribute('allow', 'encrypted-media https://open.spotify.com;');
+            playButton.src = 'https://open.spotify.com/embed/track/' + code;
+
+            let likeButton = createLikeButton(code);
+
+            songContainer.appendChild(playButton);
+            songContainer.appendChild(likeButton);
+            playlist.appendChild(songContainer);
+        }
+    }
+
     function makeRecommendationRequest(target) {
         let options = {
             method: 'GET',
@@ -11,16 +57,7 @@
         fetch(window.location.origin + '/recommend?target=' + target, options).then(response => {
             return response.json();
         }).then(json => {
-            let playlistId = target + '-playlist';
-            let playlist = document.getElementById(playlistId);
-
-            for (const code of json.codes) {
-                let playButton = document.createElement('iframe');
-                playButton.setAttribute('allow', 'encrypted-media https://open.spotify.com;');
-                playButton.src = 'https://open.spotify.com/embed/track/' + code;
-
-                playlist.appendChild(playButton);
-            }
+            createRecommendationPlaylist(json, target);
         })
     }
 

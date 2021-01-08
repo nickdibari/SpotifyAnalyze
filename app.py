@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, request, session, url_for, abort
+from flask import Flask, redirect, render_template, request, session, url_for
 from spotify_client import SpotifyClient
 
 import config
@@ -101,6 +101,26 @@ def recommend():
     return {
         'codes': track_codes
     }
+
+
+@app.route('/like_song', methods=['POST'])
+def like_song():
+    access_token = session.get('access_token')
+
+    if not access_token:
+        return redirect(url_for('homepage'))
+
+    client = SpotifyClient(client_id=config.SPOTIFY_CLIENT_ID, secret_key=config.SPOTIFY_SECRET_KEY)
+    song_id = request.args.get('song_id')
+
+    client._make_spotify_request(
+        'PUT',
+        'https://api.spotify.com/v1/me/tracks',
+        params={'ids': song_id},
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+
+    return {'status': 'OK'}
 
 
 if __name__ == '__main__':
