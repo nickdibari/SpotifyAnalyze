@@ -38,35 +38,42 @@ def spotify_attributes():
     if not access_token:
         return redirect(url_for('homepage'))
 
-    client = SpotifyClient(client_id=config.SPOTIFY_CLIENT_ID, secret_key=config.SPOTIFY_SECRET_KEY)
+    average_valence = session.get('valence')
+    average_energy = session.get('energy')
+    average_danceability = session.get('danceability')
 
-    recently_listened_tracks = client.get_recently_played_tracks_for_user(
-        access_token,
-        limit=config.SPOTIFY_RECENTLY_LISTENED_TRACKS_LIMIT
-    )
+    if not all([average_valence, average_energy, average_danceability]):
 
-    recently_listened_tracks_codes = [{'code': track['track']['uri']} for track in recently_listened_tracks['items']]
-    recently_listened_track_attributes = client.get_audio_features_for_tracks(recently_listened_tracks_codes)
+        client = SpotifyClient(client_id=config.SPOTIFY_CLIENT_ID, secret_key=config.SPOTIFY_SECRET_KEY)
 
-    tracks = [client.get_code_from_spotify_uri(track['code']) for track in recently_listened_tracks_codes]
-    seed_tracks = ','.join(tracks[:config.SPOTIFY_SEED_TRACK_LIMIT])
-    session['seed_tracks'] = seed_tracks
+        recently_listened_tracks = client.get_recently_played_tracks_for_user(
+            access_token,
+            limit=config.SPOTIFY_RECENTLY_LISTENED_TRACKS_LIMIT
+        )
 
-    total_valence = sum([track['valence'] for track in recently_listened_track_attributes])
-    average_valence = round((total_valence / len(recently_listened_track_attributes)), 2)
+        recently_listened_tracks_codes = [{'code': track['track']['uri']} for track in recently_listened_tracks['items']]
+        recently_listened_track_attributes = client.get_audio_features_for_tracks(recently_listened_tracks_codes)
+
+        tracks = [client.get_code_from_spotify_uri(track['code']) for track in recently_listened_tracks_codes]
+        seed_tracks = ','.join(tracks[:config.SPOTIFY_SEED_TRACK_LIMIT])
+        session['seed_tracks'] = seed_tracks
+
+        total_valence = sum([track['valence'] for track in recently_listened_track_attributes])
+        average_valence = round((total_valence / len(recently_listened_track_attributes)), 2)
+
+        total_energy = sum([track['energy'] for track in recently_listened_track_attributes])
+        average_energy = round((total_energy / len(recently_listened_track_attributes)), 2)
+
+        total_danceability = sum([track['danceability'] for track in recently_listened_track_attributes])
+        average_danceability = round((total_danceability / len(recently_listened_track_attributes)), 2)
+
+        session['valence'] = average_valence
+        session['energy'] = average_energy
+        session['danceability'] = average_danceability
+
     average_valence_display = int(average_valence * 100)
-
-    total_energy = sum([track['energy'] for track in recently_listened_track_attributes])
-    average_energy = round((total_energy / len(recently_listened_track_attributes)), 2)
     average_energy_display = int(average_energy * 100)
-
-    total_danceability = sum([track['danceability'] for track in recently_listened_track_attributes])
-    average_danceability = round((total_danceability / len(recently_listened_track_attributes)), 2)
     average_danceability_display = int(average_danceability * 100)
-
-    session['valence'] = average_valence
-    session['energy'] = average_energy
-    session['danceability'] = average_danceability
 
     context = {
         'average_valence': average_valence_display,
