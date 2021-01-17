@@ -84,23 +84,14 @@ def recommend():
     target = request.args.get('target')
     average_value = session[target]
     seed_tracks = session['seed_tracks']
+    min_value = average_value - 0.5
+    max_value = average_value + 0.5
 
-    tracks = client._make_spotify_request(
-        'GET',
-        'https://api.spotify.com/v1/recommendations',
-        params={
-            f'max_{target}': average_value + .05,
-            f'min_{target}': average_value - .05,
-            'seed_tracks': seed_tracks,
-            'limit': config.SPOTIFY_SEED_TRACK_LIMIT
-        }
-    )
+    tracks = client.get_recommendations(target, min_value, max_value, seed_tracks, config.SPOTIFY_SEED_TRACK_LIMIT)
 
     track_codes = [client.get_code_from_spotify_uri(track['uri']) for track in tracks['tracks']]
 
-    return {
-        'codes': track_codes
-    }
+    return {'codes': track_codes}
 
 
 @app.route('/like_song', methods=['POST'])
@@ -113,12 +104,7 @@ def like_song():
     client = SpotifyClient(client_id=config.SPOTIFY_CLIENT_ID, secret_key=config.SPOTIFY_SECRET_KEY)
     song_id = request.args.get('song_id')
 
-    client._make_spotify_request(
-        'PUT',
-        'https://api.spotify.com/v1/me/tracks',
-        params={'ids': song_id},
-        headers={'Authorization': f'Bearer {access_token}'}
-    )
+    client.add_track_to_saved_songs(access_token, song_id)
 
     return {'status': 'OK'}
 
