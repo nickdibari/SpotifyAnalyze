@@ -30,7 +30,15 @@
 
     function createRecommendationPlaylist(data, target) {
         let playlistId = target + '-playlist';
+        let playlistErrorMessage = document.getElementById(target + '-playlist-error-message');
         let playlist = document.getElementById(playlistId);
+
+        playlistErrorMessage.hidden = true;
+
+        if (!Boolean(data.codes.length)) {
+            playlistErrorMessage.hidden = false;
+            return;
+        }
 
         for (const code of data.codes) {
             let songContainer = document.createElement('div');
