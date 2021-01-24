@@ -91,10 +91,26 @@ def recommend():
     target = request.args.get('target')
     average_value = session[target]
     seed_tracks = session['seed_tracks']
-    min_value = average_value - 0.5
-    max_value = average_value + 0.5
+    min_value = average_value - 0.05
+    max_value = average_value + 0.05
 
-    tracks = client.get_recommendations(target, min_value, max_value, seed_tracks, config.SPOTIFY_SEED_TRACK_LIMIT)
+    tracks = {'tracks': []}
+
+    # Make requests to Spotify API for recommendations for target within value ranges
+    # If no tracks are found for attribute targets, keep making requests with higher
+    # variance in order to get tracks for recommendations
+    for _ in range(3):
+        app .logger.info(
+            f'Making request for {target} with min_value={min_value} and max_value={max_value}\n'
+            f'Seed tracks={seed_tracks}'
+        )
+        tracks = client.get_recommendations(target, min_value, max_value, seed_tracks, config.SPOTIFY_SEED_TRACK_LIMIT)
+
+        if tracks['tracks']:
+            break
+        else:
+            min_value = min_value - 0.05
+            max_value = max_value + 0.05
 
     track_codes = [client.get_code_from_spotify_uri(track['uri']) for track in tracks['tracks']]
 
