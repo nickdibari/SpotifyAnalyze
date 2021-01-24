@@ -3,6 +3,15 @@
     width: 100%;
 }
 
+#recommendations-playlists-container {
+    margin-top: 5%;
+}
+
+.recommendation-playlist {
+    margin-top: 2%;
+    margin-bottom: 2%;
+}
+
 th {
     border: 1px solid #f2f2f2;
     padding: 8px;
