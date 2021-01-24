@@ -18,3 +18,7 @@ td {
     padding: 8px;
     background-color: #e1e8e7;
 }
+
+.play-button {
+    height: 90px;
+}

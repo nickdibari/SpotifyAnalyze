@@ -46,6 +46,7 @@
             songContainer.className = 'col text-center';
 
             let playButton = document.createElement('iframe');
+            playButton.className = 'play-button';
             playButton.setAttribute('allow', 'encrypted-media https://open.spotify.com;');
             playButton.src = 'https://open.spotify.com/embed/track/' + code;
 
