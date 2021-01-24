@@ -21,7 +21,7 @@
     function createLikeButton(songId) {
         let button = document.createElement('button');
         button.id = 'like-button-' + songId;
-        button.className = 'btn btn-primary';
+        button.className = 'btn btn-success';
         button.appendChild(document.createTextNode('Like'));
         button.dataset.songId = songId;
         button.addEventListener('click', makeLikeRequest);
