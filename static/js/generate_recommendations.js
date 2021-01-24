@@ -42,6 +42,7 @@
 
         for (const code of data.codes) {
             let songContainer = document.createElement('div');
+            songContainer.className = 'col-sm';
 
             let playButton = document.createElement('iframe');
             playButton.setAttribute('allow', 'encrypted-media https://open.spotify.com;');
