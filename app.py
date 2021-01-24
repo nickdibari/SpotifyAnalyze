@@ -104,7 +104,14 @@ def recommend():
             f'Making request for {target} with min_value={min_value} and max_value={max_value}\n'
             f'Seed tracks={seed_tracks}'
         )
-        tracks = client.get_recommendations(target, min_value, max_value, seed_tracks, config.SPOTIFY_SEED_TRACK_LIMIT)
+
+        tracks = client.get_recommendations(
+            target,
+            min_value,
+            max_value,
+            seed_tracks,
+            config.SPOTIFY_RECOMMENDATIONS_TRACK_LIMIT
+        )
 
         if tracks['tracks']:
             break
