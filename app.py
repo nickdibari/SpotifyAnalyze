@@ -1,4 +1,6 @@
-from flask import Flask, redirect, render_template, request, session, url_for
+import secrets
+
+from flask import Flask, Response, redirect, render_template, request, session, url_for
 from spotify_client import SpotifyClient
 
 import config
@@ -10,25 +12,38 @@ app.secret_key = config.SECRET_KEY
 
 @app.route('/')
 def homepage():
+    state = secrets.token_urlsafe(config.SPOTIFY_SESSION_STATE_LENGTH)
     client = SpotifyClient(client_id=config.SPOTIFY_CLIENT_ID, secret_key=config.SPOTIFY_SECRET_KEY)
+
     spotify_oauth_link = client.build_spotify_oauth_confirm_link(
-        'test-state',
+        state,
         config.SPOTIFY_SCOPES,
         config.SPOTIFY_REDIRECT_URI
     )
+
+    session['state'] = state
 
     return render_template('homepage.html', spotify_oauth_link=spotify_oauth_link)
 
 
 @app.route('/spotify_auth')
 def spotify_auth():
-    client = SpotifyClient(client_id=config.SPOTIFY_CLIENT_ID, secret_key=config.SPOTIFY_SECRET_KEY)
-    code = request.args.get('code')
+    request_state = request.args.get('state')
+    session_state = session.get('state')
 
-    access_token = client.get_access_and_refresh_tokens(code, config.SPOTIFY_REDIRECT_URI)['access_token']
-    session['access_token'] = access_token
+    if secrets.compare_digest(request_state, session_state):
+        client = SpotifyClient(client_id=config.SPOTIFY_CLIENT_ID, secret_key=config.SPOTIFY_SECRET_KEY)
+        code = request.args.get('code')
 
-    return redirect(url_for('spotify_attributes'))
+        access_token = client.get_access_and_refresh_tokens(code, config.SPOTIFY_REDIRECT_URI)['access_token']
+        session['access_token'] = access_token
+
+        return redirect(url_for('spotify_attributes'))
+    else:
+        return Response(
+            'Invalid state parameter',
+            status=400
+        )
 
 
 @app.route('/spotify_attributes')
