@@ -1,6 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 
+APP_DIR="/srv/app/"
+BASH_FILE="/home/vagrant/.profile"
+VIRTUAL_ENV_DIR="/srv/virtualenv/"
+VIRTUAL_ENV_SOURCE="/srv/virtualenv/bin/activate"
+
 sudo apt update
 sudo apt install python3-venv nginx -y
 
@@ -23,25 +28,21 @@ CONFIG
 
 sudo systemctl restart nginx
 
-sudo python3 -m venv /srv/virtualenv
+sudo python3 -m venv "$VIRTUAL_ENV_DIR"
 
-source /srv/virtualenv/bin/activate
-cd /srv/app
+source "$VIRTUAL_ENV_SOURCE"
+cd "$APP_DIR"
 pip install -r requirements.txt
 
 sudo ufw allow "Nginx Full"
 sudo ufw allow ssh
 sudo ufw --force enable
 
-BASH_FILE="/home/vagrant/.profile"
-
-if ! grep -qse "### BEGIN dotfiles MANAGED SECTION" "$BASH_FILE"; then
-(
-cat <<'PROFILE'
-   ### BEGIN Vagrant MANAGED SECTION
-   . /srv/virtualenv/bin/activate
-   cd /srv/app/
-   ### END Vagrant MANAGED SECTION
-PROFILE
-) >> "$BASH_FILE"
+if ! grep -qse "### BEGIN Vagrant MANAGED SECTION" "$BASH_FILE"; then
+  {
+  echo "### BEGIN Vagrant MANAGED SECTION"
+  echo ". $VIRTUAL_ENV_SOURCE"
+  echo "cd $APP_DIR"
+  echo "### END Vagrant MANAGED SECTION"
+  } >> "$BASH_FILE"
 fi
