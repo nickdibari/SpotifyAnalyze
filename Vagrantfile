@@ -17,5 +17,7 @@ Vagrant.configure("2") do |config|
     app.vm.hostname = "spotify-analyze.vm"
 
 	app.vm.synced_folder ".", "/srv/app/"
+
+	app.vm.provision "shell", path: "provision.bash"
   end
 end

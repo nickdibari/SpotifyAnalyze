@@ -58,6 +58,7 @@ def spotify_attributes():
     average_danceability = session.get('danceability')
 
     if not all([average_valence, average_energy, average_danceability]):
+        app.logger.info('Making request for song attributes')
 
         client = SpotifyClient(client_id=config.SPOTIFY_CLIENT_ID, secret_key=config.SPOTIFY_SECRET_KEY)
 
