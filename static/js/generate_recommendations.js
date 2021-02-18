@@ -2,15 +2,17 @@
 
 (function IIFE() {
     function makeLikeRequest() {
+        let songId = this.dataset.songId;
+
         let options = {
             method: 'POST',
             credentials: 'include',
-            headers: {'Content-Type': 'application/json'}
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({song_id: songId})
         };
 
-        let songId = this.dataset.songId;
 
-        fetch(window.location.origin + '/like_song?song_id=' + songId, options).then(response => {
+        fetch(window.location.origin + '/like_song', options).then(response => {
             return response.json();
         }).then(json => {
             let likeButton = document.getElementById('like-button-' + songId);

@@ -147,7 +147,7 @@ def like_song():
         return redirect(url_for('homepage'))
 
     client = SpotifyClient(client_id=config.SPOTIFY_CLIENT_ID, secret_key=config.SPOTIFY_SECRET_KEY)
-    song_id = request.args.get('song_id')
+    song_id = request.json.get('song_id')
 
     client.add_track_to_saved_songs(access_token, song_id)
 
