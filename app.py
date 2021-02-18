@@ -115,7 +115,7 @@ def recommend():
     # If no tracks are found for attribute targets, keep making requests with higher
     # variance in order to get tracks for recommendations
     for _ in range(3):
-        app .logger.info(
+        app.logger.info(
             f'Making request for {target} with min_value={min_value} and max_value={max_value}\n'
             f'Seed tracks={seed_tracks}'
         )

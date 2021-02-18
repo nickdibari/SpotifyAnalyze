@@ -1,2 +1,3 @@
 Flask==1.1.2
+gunicorn==20.0.4
 spotify-client==1.8.0
