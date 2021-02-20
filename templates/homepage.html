@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 
+{% block superhead %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/homepage.css')}}">
+{% endblock %}
+
 {% block content %}
 <h1>Login With Spotify</h1>
-    <a href="{{ spotify_oauth_link }}"><button class="btn btn-primary">Login With Spotify</button></a>
+    <a href="{{ spotify_oauth_link }}"><button id="spotify-auth-button" class="btn btn-primary">Login With Spotify</button></a>
 {% endblock %}
