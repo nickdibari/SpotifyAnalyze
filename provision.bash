@@ -6,8 +6,8 @@ BASH_FILE="/home/vagrant/.profile"
 VIRTUAL_ENV_DIR="/srv/virtualenv/"
 VIRTUAL_ENV_SOURCE="/srv/virtualenv/bin/activate"
 
-sudo apt update
-sudo apt install python3-venv nginx -y
+sudo apt-get update
+sudo apt-get install python3-venv nginx -y
 
 (
 sudo cat <<'CONFIG'
@@ -30,12 +30,13 @@ sudo systemctl restart nginx
 
 chown vagrant:vagrant /srv/
 
-su vagrant
+su vagrant <<EOUS
 python3 -m venv "$VIRTUAL_ENV_DIR"
 source "$VIRTUAL_ENV_SOURCE"
 cd "$APP_DIR"
+pip install --upgrade pip
 pip install -r requirements.txt
-sudo su root
+EOUS
 
 sudo ufw allow "Nginx Full"
 sudo ufw allow ssh
