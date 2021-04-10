@@ -1,4 +1,4 @@
 Flask==1.1.2
-gunicorn==20.0.4
+gunicorn==20.1.0
 spotify-client==1.8.0
-python-json-logger==0.1.11
+python-json-logger==2.0.1
