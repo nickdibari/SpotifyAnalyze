@@ -76,8 +76,8 @@
 
     function init() {
         makeRecommendationRequest('valence');
-        makeRecommendationRequest('energy');
-        makeRecommendationRequest('danceability');
+        setTimeout(makeRecommendationRequest, 200, 'energy');
+        setTimeout(makeRecommendationRequest, 200, 'danceability');
     }
 
     init();
