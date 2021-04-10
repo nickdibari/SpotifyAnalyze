@@ -1,9 +1,20 @@
+import logging
 import secrets
 
 from flask import Flask, Response, redirect, render_template, request, session, url_for
 from spotify_client import SpotifyClient
+from pythonjsonlogger.jsonlogger import JsonFormatter
 
 import config
+
+spotify_logger_handler = logging.FileHandler(filename='app.log')
+spotify_logger_handler.setFormatter(
+    JsonFormatter(fmt='%(levelname)s %(asctime)s %s(pathname)s %(lineno)s %(name)s %(message)s')
+)
+
+spotify_logger = logging.getLogger('spotify_client')
+spotify_logger.setLevel(logging.INFO)
+spotify_logger.addHandler(spotify_logger_handler)
 
 app = Flask(__name__)
 
@@ -40,10 +51,7 @@ def spotify_auth():
 
         return redirect(url_for('spotify_attributes'))
     else:
-        return Response(
-            'Invalid state parameter',
-            status=400
-        )
+        return Response('Invalid state parameter', status=400)
 
 
 @app.route('/spotify_attributes')
