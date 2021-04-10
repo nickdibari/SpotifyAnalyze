@@ -28,11 +28,14 @@ CONFIG
 
 sudo systemctl restart nginx
 
-sudo python3 -m venv "$VIRTUAL_ENV_DIR"
+chown vagrant:vagrant /srv/
 
+su vagrant
+python3 -m venv "$VIRTUAL_ENV_DIR"
 source "$VIRTUAL_ENV_SOURCE"
 cd "$APP_DIR"
 pip install -r requirements.txt
+sudo su root
 
 sudo ufw allow "Nginx Full"
 sudo ufw allow ssh

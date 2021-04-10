@@ -16,8 +16,8 @@ Vagrant.configure("2") do |config|
     app.vm.network "forwarded_port", id: "ssh", host: 3333, guest: 22
     app.vm.hostname = "spotify-analyze.vm"
 
-	app.vm.synced_folder ".", "/srv/app/"
+	  app.vm.synced_folder ".", "/srv/app/"
 
-	app.vm.provision "shell", path: "provision.bash"
+	  app.vm.provision "shell", path: "provision.bash"
   end
 end
