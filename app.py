@@ -2,7 +2,7 @@ import logging
 import secrets
 
 from flask import Flask, Response, redirect, render_template, request, session, url_for
-from spotify_client import SpotifyClient
+from spotify_client import SpotifyClient, Config
 from pythonjsonlogger.jsonlogger import JsonFormatter
 
 import config
@@ -17,14 +17,15 @@ spotify_logger.setLevel(logging.INFO)
 spotify_logger.addHandler(spotify_logger_handler)
 
 app = Flask(__name__)
-
 app.secret_key = config.SECRET_KEY
+
+Config.configure(config.SPOTIFY_CLIENT_ID, config.SPOTIFY_SECRET_KEY)
+client = SpotifyClient()
 
 
 @app.route('/')
 def homepage():
     state = secrets.token_urlsafe(config.SPOTIFY_SESSION_STATE_LENGTH)
-    client = SpotifyClient(client_id=config.SPOTIFY_CLIENT_ID, secret_key=config.SPOTIFY_SECRET_KEY)
 
     spotify_oauth_link = client.build_spotify_oauth_confirm_link(
         state,
@@ -43,7 +44,6 @@ def spotify_auth():
     session_state = session.get('state')
 
     if secrets.compare_digest(request_state, session_state):
-        client = SpotifyClient(client_id=config.SPOTIFY_CLIENT_ID, secret_key=config.SPOTIFY_SECRET_KEY)
         code = request.args.get('code')
 
         access_token = client.get_access_and_refresh_tokens(code, config.SPOTIFY_REDIRECT_URI)['access_token']
@@ -67,8 +67,6 @@ def spotify_attributes():
 
     if not all([average_valence, average_energy, average_danceability]):
         app.logger.info('Making request for song attributes')
-
-        client = SpotifyClient(client_id=config.SPOTIFY_CLIENT_ID, secret_key=config.SPOTIFY_SECRET_KEY)
 
         recently_listened_tracks = client.get_recently_played_tracks_for_user(
             access_token,
@@ -110,8 +108,6 @@ def spotify_attributes():
 
 @app.route('/recommend')
 def recommend():
-    client = SpotifyClient(client_id=config.SPOTIFY_CLIENT_ID, secret_key=config.SPOTIFY_SECRET_KEY)
-
     target = request.args.get('target')
     average_value = session[target]
     seed_tracks = session['seed_tracks']
@@ -155,7 +151,6 @@ def like_song():
     if not access_token:
         return redirect(url_for('homepage'))
 
-    client = SpotifyClient(client_id=config.SPOTIFY_CLIENT_ID, secret_key=config.SPOTIFY_SECRET_KEY)
     song_id = request.json.get('song_id')
 
     client.add_track_to_saved_songs(access_token, song_id)
