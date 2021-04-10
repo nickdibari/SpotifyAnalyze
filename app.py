@@ -7,14 +7,22 @@ from pythonjsonlogger.jsonlogger import JsonFormatter
 
 import config
 
-spotify_logger_handler = logging.FileHandler(filename='app.log')
-spotify_logger_handler.setFormatter(
-    JsonFormatter(fmt='%(levelname)s %(asctime)s %s(pathname)s %(lineno)s %(name)s %(message)s')
-)
+app_logger = logging.FileHandler(filename='app.log')
+json_formatter = JsonFormatter(fmt='%(levelname)s %(asctime)s %s(pathname)s %(lineno)s %(name)s %(message)s')
+
+spotify_logger_handler = app_logger
+spotify_logger_handler.setFormatter(json_formatter)
+
+app_logger_handler = app_logger
+app_logger_handler.setFormatter(json_formatter)
 
 spotify_logger = logging.getLogger('spotify_client')
 spotify_logger.setLevel(logging.INFO)
 spotify_logger.addHandler(spotify_logger_handler)
+
+app_logger = logging.getLogger(__name__)
+app_logger.setLevel(logging.INFO)
+app_logger.addHandler(app_logger_handler)
 
 app = Flask(__name__)
 app.secret_key = config.SECRET_KEY
@@ -66,7 +74,7 @@ def spotify_attributes():
     average_danceability = session.get('danceability')
 
     if not all([average_valence, average_energy, average_danceability]):
-        app.logger.info('Making request for song attributes')
+        app_logger.info('Making request for song attributes')
 
         recently_listened_tracks = client.get_recently_played_tracks_for_user(
             access_token,
@@ -119,10 +127,16 @@ def recommend():
     # Make requests to Spotify API for recommendations for target within value ranges
     # If no tracks are found for attribute targets, keep making requests with higher
     # variance in order to get tracks for recommendations
-    for _ in range(3):
-        app.logger.info(
-            f'Making request for {target} with min_value={min_value} and max_value={max_value}\n'
-            f'Seed tracks={seed_tracks}'
+    for i in range(3):
+        app_logger.info(
+            'Making request for recommendations',
+            extra={
+                'target': target,
+                'seed_tracks': seed_tracks,
+                'min_value': min_value,
+                'max_value': max_value,
+                'request_num': i,
+            }
         )
 
         tracks = client.get_recommendations(
@@ -154,6 +168,8 @@ def like_song():
     song_id = request.json.get('song_id')
 
     client.add_track_to_saved_songs(access_token, song_id)
+
+    app_logger.info('Saved song to user library', extra={'song_id': song_id})
 
     return {'status': 'OK'}
 
