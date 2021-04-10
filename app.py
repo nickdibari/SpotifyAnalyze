@@ -55,7 +55,10 @@ def spotify_auth():
         code = request.args.get('code')
 
         access_token = client.get_access_and_refresh_tokens(code, config.SPOTIFY_REDIRECT_URI)['access_token']
+        spotify_username = client.get_user_profile(access_token)['id']
+
         session['access_token'] = access_token
+        session['spotify_username'] = spotify_username
 
         return redirect(url_for('spotify_attributes'))
     else:
@@ -74,7 +77,12 @@ def spotify_attributes():
     average_danceability = session.get('danceability')
 
     if not all([average_valence, average_energy, average_danceability]):
-        app_logger.info('Making request for song attributes')
+        app_logger.info(
+            'Making request for song attributes',
+            extra={
+                'spotify_username': session['spotify_username'],
+            }
+        )
 
         recently_listened_tracks = client.get_recently_played_tracks_for_user(
             access_token,
@@ -116,6 +124,7 @@ def spotify_attributes():
 
 @app.route('/recommend')
 def recommend():
+    spotify_username = session['spotify_username']
     target = request.args.get('target')
     average_value = session[target]
     seed_tracks = session['seed_tracks']
@@ -129,8 +138,9 @@ def recommend():
     # variance in order to get tracks for recommendations
     for i in range(3):
         app_logger.info(
-            'Making request for recommendations',
+            'Making request for {} recommendations for user {}'.format(target, spotify_username),
             extra={
+                'spotify_username': spotify_username,
                 'target': target,
                 'seed_tracks': seed_tracks,
                 'min_value': min_value,
@@ -165,11 +175,19 @@ def like_song():
     if not access_token:
         return redirect(url_for('homepage'))
 
+    spotify_username = session['spotify_username']
+
     song_id = request.json.get('song_id')
 
     client.add_track_to_saved_songs(access_token, song_id)
 
-    app_logger.info('Saved song to user library', extra={'song_id': song_id})
+    app_logger.info(
+        'Saved song to user {} library'.format(spotify_username),
+        extra={
+            'song_id': song_id,
+            'spotify_username': spotify_username,
+        }
+    )
 
     return {'status': 'OK'}
 
