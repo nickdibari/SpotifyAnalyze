@@ -25,16 +25,25 @@
         <h2>Recommendations For Valence</h2>
         <p id="valence-playlist-error-message" hidden>No songs could be generated for valence!</p>
         <div id="valence-playlist-container" class="row"></div>
+        <div id="valence-refresh-container" class="row refresh-container">
+            <button id="refresh-valence-playlist" type="button" class="btn btn-primary refresh-button" data-target="valence">Refresh</button>
+        </div>
     </div>
     <div id="energy-playlist" class="row recommendation-playlist">
         <h2>Recommendations For Energy</h2>
         <p id="energy-playlist-error-message" hidden>No songs could be generated for energy!</p>
         <div id="energy-playlist-container" class="row"></div>
+        <div id="energy-refresh-container" class="row refresh-container">
+            <button id="refresh-energy-playlist" type="button" class="btn btn-primary refresh-button" data-target="energy">Refresh</button>
+        </div>
     </div>
     <div id="danceability-playlist" class="row recommendation-playlist">
         <h2>Recommendations For Danceability</h2>
         <p id="danceability-playlist-error-message" hidden>No songs could be generated for danceability!</p>
         <div id="danceability-playlist-container" class="row"></div>
+        <div id="danceability-refresh-container" class="row refresh-container">
+            <button id="refresh-danceability-playlist" type="button" class="btn btn-primary refresh-button" data-target="danceability">Refresh</button>
+        </div>
     </div>
 </div>
 {% endblock %}

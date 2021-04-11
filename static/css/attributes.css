@@ -12,6 +12,15 @@
     margin-bottom: 2%;
 }
 
+.refresh-container {
+    margin-top: 2%;
+    justify-content: center;
+}
+
+.refresh-button{
+    width: 15%;
+}
+
 th {
     border: 1px solid #f2f2f2;
     padding: 8px;

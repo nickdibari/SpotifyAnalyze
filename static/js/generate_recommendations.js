@@ -11,7 +11,6 @@
             body: JSON.stringify({song_id: songId})
         };
 
-
         fetch(window.location.origin + '/like_song', options).then(response => {
             return response.json();
         }).then(json => {
@@ -96,7 +95,27 @@
         })
     }
 
+    function refreshPlaylist() {
+        let target = this.dataset.target;
+        let playlistContainer = document.getElementById(target + '-playlist-container');
+
+        while (playlistContainer.hasChildNodes()) {
+            playlistContainer.removeChild(playlistContainer.firstChild);
+        }
+
+        makeRecommendationRequest(target);
+    }
+
+    function addRefreshEventHandlers() {
+        let refreshButtons = document.getElementsByClassName('refresh-button');
+
+        for (const button of refreshButtons) {
+            button.addEventListener('click', refreshPlaylist);
+        }
+    }
+
     function init() {
+        addRefreshEventHandlers();
         makeRecommendationRequest('valence');
         setTimeout(makeRecommendationRequest, 200, 'energy');
         setTimeout(makeRecommendationRequest, 200, 'danceability');
