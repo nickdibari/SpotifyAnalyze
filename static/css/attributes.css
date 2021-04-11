@@ -3,17 +3,16 @@
     width: 100%;
 }
 
-#recommendations-playlists-container {
-    margin-top: 5%;
+.recommendation-playlist {
+    margin-top: 1%;
 }
 
-.recommendation-playlist {
-    margin-top: 2%;
-    margin-bottom: 2%;
+.like-button-container {
+    margin-top: 1%;
 }
 
 .refresh-container {
-    margin-top: 2%;
+    margin-top: 1%;
     justify-content: center;
 }
 

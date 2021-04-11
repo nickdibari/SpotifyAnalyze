@@ -41,6 +41,9 @@
     }
 
     function createLikeButton(songId, target) {
+        let buttonContainer = document.createElement('div');
+        buttonContainer.className = 'like-button-container';
+
         let button = document.createElement('button');
         button.id = 'like-button-' + songId;
         button.className = 'btn btn-success';
@@ -49,7 +52,8 @@
         button.dataset.target = target;
         button.addEventListener('click', makeLikeRequest);
 
-        return button
+        buttonContainer.appendChild(button);
+        return buttonContainer
     }
 
     function createRecommendationPlaylist(data, target) {
