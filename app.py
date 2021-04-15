@@ -33,6 +33,11 @@ client = SpotifyClient()
 
 @app.route('/')
 def homepage():
+    # Delete previous attribute values if already present
+    session.pop('valence', None)
+    session.pop('energy', None)
+    session.pop('danceability', None)
+
     state = secrets.token_urlsafe(config.SPOTIFY_SESSION_STATE_LENGTH)
 
     spotify_oauth_link = client.build_spotify_oauth_confirm_link(
