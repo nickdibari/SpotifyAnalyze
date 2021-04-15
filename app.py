@@ -20,7 +20,7 @@ spotify_logger = logging.getLogger('spotify_client')
 spotify_logger.setLevel(logging.INFO)
 spotify_logger.addHandler(spotify_logger_handler)
 
-app_logger = logging.getLogger(__name__)
+app_logger = logging.getLogger('spotifyanalyze')
 app_logger.setLevel(logging.INFO)
 app_logger.addHandler(app_logger_handler)
 
