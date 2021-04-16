@@ -5,6 +5,13 @@
 {% endblock %}
 
 {% block content %}
-<h1>Login With Spotify</h1>
-    <a href="{{ spotify_oauth_link }}"><button id="spotify-auth-button" class="btn btn-primary">Login With Spotify</button></a>
+    <h1>SpotifyAnalyze</h1>
+    <p>Welcome to SpotifyAnalyze! This site will analyze your recently listened songs on Spotify and suggest new songs
+    to you based on your listening habits. You can then listen to the songs on the site and if you like them you can add them to your
+    Spotify library. Refresh your suggestion playlists to find new songs and keep the good times rolling!</p>
+    <a href="{{ spotify_oauth_link }}"><button id="spotify-auth-button" class="btn btn-primary">Get Started</button></a>
+    <h2>Want More?</h2>
+    <p>If you like the idea of finding new songs based on their emotional pull, you should checkout <a target="_blank" href="https://moodytunes.us">MoodyTunes</a>!
+    This site allows you to browse songs for an emotion and save them to your personalized playlist. As you add more songs to your emotion playlist
+    the algorithm is better able to suggest songs to you for the emotion, so you can enjoy a more personalized experience for finding new songs.</p>
 {% endblock %}
