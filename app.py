@@ -129,6 +129,11 @@ def spotify_attributes():
 
 @app.route('/recommend')
 def recommend():
+    access_token = session.get('access_token')
+
+    if not access_token:
+        return redirect(url_for('homepage'))
+
     spotify_username = session['spotify_username']
     target = request.args.get('target')
     average_value = session[target]
