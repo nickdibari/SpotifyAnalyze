@@ -9,23 +9,7 @@ VIRTUAL_ENV_SOURCE="/srv/virtualenv/bin/activate"
 sudo apt-get update
 sudo apt-get install python3-venv nginx -y
 
-(
-sudo cat <<'CONFIG'
-  upstream app_server {
-    server 127.0.0.1:5000;
-  }
-
-  server {
-    listen 80;
-    server_name spotify-analyze.vm;
-
-      location / {
-          proxy_pass http://app_server;
-      }
-  }
-CONFIG
-) > /etc/nginx/conf.d/nginx.conf
-
+sudo cp /srv/app/nginx.conf /etc/nginx/conf.d/nginx.conf
 sudo systemctl restart nginx
 
 chown vagrant:vagrant /srv/
