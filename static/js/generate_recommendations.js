@@ -3,11 +3,12 @@
 (function IIFE() {
     function makeLikeRequest() {
         let songId = this.dataset.songId;
+        let csrfToken = document.getElementById('config').dataset.csrfToken;
 
         let options = {
             method: 'POST',
             credentials: 'include',
-            headers: {'Content-Type': 'application/json'},
+            headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrfToken},
             body: JSON.stringify({song_id: songId})
         };
 

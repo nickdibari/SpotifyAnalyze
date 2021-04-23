@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block content %}
+<div id="config" data-csrf-token="{{ csrf_token() }}"></div>
 <h1>Your Emotion Attributes</h1>
 <table id="emotion-attributes">
     <tr>

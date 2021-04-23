@@ -2,6 +2,7 @@ import logging
 import secrets
 
 from flask import Flask, Response, redirect, render_template, request, session, url_for
+from flask_wtf.csrf import CSRFProtect
 from spotify_client import SpotifyClient, Config
 from pythonjsonlogger.jsonlogger import JsonFormatter
 
@@ -24,8 +25,13 @@ app_logger = logging.getLogger('spotifyanalyze')
 app_logger.setLevel(logging.INFO)
 app_logger.addHandler(app_logger_handler)
 
+csrf_logger = logging.getLogger('flask_wtf.csrf')
+csrf_logger.setLevel(logging.INFO)
+csrf_logger.addHandler(app_logger_handler)
+
 app = Flask(__name__)
 app.secret_key = config.SECRET_KEY
+csrf = CSRFProtect(app)
 
 Config.configure(config.SPOTIFY_CLIENT_ID, config.SPOTIFY_SECRET_KEY)
 client = SpotifyClient()
