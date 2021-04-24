@@ -173,7 +173,7 @@ def recommend():
             config.SPOTIFY_RECOMMENDATIONS_TRACK_LIMIT
         )
 
-        if tracks['tracks']:
+        if len(tracks['tracks']) == config.SPOTIFY_RECOMMENDATIONS_TRACK_LIMIT:
             break
         else:
             min_value = min_value - 0.05
