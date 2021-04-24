@@ -7,7 +7,7 @@ VIRTUAL_ENV_DIR="/srv/virtualenv/"
 VIRTUAL_ENV_SOURCE="/srv/virtualenv/bin/activate"
 
 sudo apt-get update
-sudo apt-get install python3-venv nginx -y
+sudo apt-get install -y python3-venv nginx 2> /dev/null
 
 sudo cp /srv/app/nginx.conf /etc/nginx/conf.d/nginx.conf
 sudo systemctl restart nginx
