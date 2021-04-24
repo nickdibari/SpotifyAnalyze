@@ -33,7 +33,7 @@ app = Flask(__name__)
 app.secret_key = config.SECRET_KEY
 csrf = CSRFProtect(app)
 
-Config.configure(config.SPOTIFY_CLIENT_ID, config.SPOTIFY_SECRET_KEY)
+Config.configure(config.SPOTIFY_CLIENT_ID, config.SPOTIFY_SECRET_KEY, config.TIMEOUT_VALUE)
 client = SpotifyClient()
 
 
