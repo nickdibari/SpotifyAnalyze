@@ -173,13 +173,28 @@ def recommend():
             config.SPOTIFY_RECOMMENDATIONS_TRACK_LIMIT
         )
 
+        # Filter out tracks that the user has already been recommended
+        # to prevent showing the user a song they have already seen
+        session_seen_songs = session.get('seen_songs')
+        if session_seen_songs:
+            tracks = [track for track in tracks['tracks'] if not track['id'] in session_seen_songs]
+            tracks = {'tracks': tracks}
+
         if len(tracks['tracks']) == config.SPOTIFY_RECOMMENDATIONS_TRACK_LIMIT:
             break
         else:
             min_value = min_value - 0.05
             max_value = max_value + 0.05
 
-    track_codes = [client.get_code_from_spotify_uri(track['uri']) for track in tracks['tracks']]
+    track_codes = [track['id'] for track in tracks['tracks']]
+
+    seen_songs = session.get('seen_songs', list())
+    for track_code in track_codes:
+        seen_songs.insert(0, track_code)
+
+    seen_songs = list(set(seen_songs))
+    seen_songs = seen_songs[:100]
+    session['seen_songs'] = seen_songs
 
     return {'codes': track_codes}
 
