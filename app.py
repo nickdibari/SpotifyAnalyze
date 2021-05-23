@@ -62,7 +62,7 @@ def spotify_auth():
     request_state = request.args.get('state')
     session_state = session.get('state')
 
-    if secrets.compare_digest(request_state, session_state):
+    if session_state and secrets.compare_digest(request_state, session_state):
         code = request.args.get('code')
 
         access_token = client.get_access_and_refresh_tokens(code, config.SPOTIFY_REDIRECT_URI)['access_token']
