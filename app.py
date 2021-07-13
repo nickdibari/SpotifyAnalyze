@@ -31,10 +31,22 @@ csrf_logger.addHandler(app_logger_handler)
 
 app = Flask(__name__)
 app.secret_key = config.SECRET_KEY
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE='Strict',
+)
 csrf = CSRFProtect(app)
 
 Config.configure(config.SPOTIFY_CLIENT_ID, config.SPOTIFY_SECRET_KEY, config.TIMEOUT_VALUE)
 client = SpotifyClient()
+
+
+@app.after_request
+def add_security_headers(response):
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+
+    return response
 
 
 @app.route('/')
